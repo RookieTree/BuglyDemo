@@ -1,0 +1,98 @@
+apply plugin: 'com.android.application'
+apply plugin: 'walle'
+//apply plugin: 'com.tencent.bugly.tinker-support'
+
+// 依赖插件脚本
+apply from: 'tinker-support.gradle'
+
+//美团walle多渠道打包
+walle {
+    // 指定渠道包的输出路径
+    apkOutputFolder = new File("${project.buildDir}/outputs/channels");
+    // 定制渠道包的APK的文件名称
+    apkFileNameFormat = '${appName}-v${versionName}-${versionCode}-${buildTime}-${channel}-${buildType}.apk';
+    // 渠道配置文件
+    channelFile = new File("${project.getProjectDir()}/channel")
+}
+
+
+
+android {
+
+    dexOptions {
+        jumboMode = true;
+    }
+
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
+
+    defaultConfig {
+        applicationId "com.tree.showanimationdemo"
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 9
+        versionName "9.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            //设置支持的SO库架构
+            abiFilters 'armeabi' //, 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+        }
+
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("./keystore/dt.jks")
+            storePassword "773555725"
+            keyAlias "touker"
+            keyPassword "773555725"
+        }
+
+        debug {
+            storeFile file("./keystore/dt.jks")
+            storePassword "773555725"
+            keyAlias "touker"
+            keyPassword "773555725"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android.txt')
+        }
+
+
+    }
+
+
+}
+
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile 'com.android.support:appcompat-v7:26.0.2'
+
+
+    compile "com.android.support:multidex:1.0.1" // 多dex配置
+    //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.2.0
+    compile 'com.tencent.bugly:crashreport_upgrade:latest.release'
+    compile 'com.tencent.bugly:nativecrashreport:latest.release'
+    /*渠道信息统计分析*/
+    compile 'com.meituan.android.walle:library:1.1.5'
+
+
+}
+
+
+
+
